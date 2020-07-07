@@ -65,21 +65,29 @@ RUN cd ./WPS-${WPS_VERSION} \
 ENV LD_LIBRARY_PATH /usr/lib64/openmpi/lib
 ENV PATH  /usr/lib64/openmpi/bin:$PATH
 #
+# copy in a couple custom scripts
+#
+COPY docker-clean /wrf
+#### KATE TODO: CHANGE RUN SCRIPT NAME #####
+COPY run-wps-wrf /wrf
+RUN chmod +x /wrf/docker-clean \
+ && chmod +x /wrf/run-wps-wrf
+#
 # set up ssh configuration
 #
-#COPY ssh_config /root/.ssh/config
-#COPY slave /wrf/slave
-#RUN yum install -y openssh-clients openssh-server net-tools \
-#    && yum clean all \
-#    && mkdir -p /var/run/sshd \
-#    && ssh-keygen -A \
-#    && sed -i 's/#PermitRootLogin yes/PermitRootLogin yes/g' /etc/ssh/sshd_config \
-#    && sed -i 's/#RSAAuthentication yes/RSAAuthentication yes/g' /etc/ssh/sshd_config \
-#    && sed -i 's/#PubkeyAuthentication yes/PubkeyAuthentication yes/g' /etc/ssh/sshd_config \
-#    && ssh-keygen -f /root/.ssh/id_rsa -t rsa -N '' \
-#    && chmod 600 /root/.ssh/config \
-#    && chmod 700 /root/.ssh \
-#    && cp /root/.ssh/id_rsa.pub /root/.ssh/authorized_keys \
-#    && chmod +x /wrf/slave
-#
-CMD ["/bin/bash"]
+COPY ssh_config /root/.ssh/config
+COPY slave /wrf/slave
+RUN yum install -y openssh-clients openssh-server net-tools \
+    && yum clean all \
+    && mkdir -p /var/run/sshd \
+    && ssh-keygen -A \
+    && sed -i 's/#PermitRootLogin yes/PermitRootLogin yes/g' /etc/ssh/sshd_config \
+    && sed -i 's/#RSAAuthentication yes/RSAAuthentication yes/g' /etc/ssh/sshd_config \
+    && sed -i 's/#PubkeyAuthentication yes/PubkeyAuthentication yes/g' /etc/ssh/sshd_config \
+    && ssh-keygen -f /root/.ssh/id_rsa -t rsa -N '' \
+    && chmod 600 /root/.ssh/config \
+    && chmod 700 /root/.ssh \
+    && cp /root/.ssh/id_rsa.pub /root/.ssh/authorized_keys \
+    && chmod +x /wrf/slave
+
+CMD ["/wrf/run-wps-wrf"]
