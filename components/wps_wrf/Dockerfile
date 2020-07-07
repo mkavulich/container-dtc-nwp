@@ -1,4 +1,4 @@
-FROM centos:latest
+FROM centos:7
 MAINTAINER Jamie Wolff <jwolff@ucar.edu> or Michelle Harrold <harrold@ucar.edu>
 # 
 # This Dockerfile compiles WRF from source during "docker build" step
